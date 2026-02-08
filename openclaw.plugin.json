@@ -1,0 +1,15 @@
+{
+  "id": "openclaw-council",
+  "name": "OpenClaw Council",
+  "description": "Pluggable multi-role council layer for OpenClaw (consensus + synthesis).",
+  "version": "0.1.0",
+  "skills": ["skills/openclaw-council"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": { "type": "boolean", "default": true },
+      "defaultConfigPath": { "type": "string" }
+    }
+  }
+}

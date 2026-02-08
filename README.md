@@ -49,3 +49,22 @@ python3 council.py run --query "Сделай план запуска проду�
 bash install.sh
 ```
 Installs into `~/.openclaw/skills/openclaw-council`.
+
+
+## Install as OpenClaw plugin (recommended)
+```bash
+# after cloning this repo
+openclaw plugins install .
+openclaw plugins enable openclaw-council
+openclaw gateway restart
+```
+
+Then run the council skill from:
+`skills/openclaw-council/SKILL.md`
+
+## Install directly from GitHub source
+```bash
+git clone https://github.com/Personaz1/openclaw-council.git
+cd openclaw-council
+openclaw plugins install .
+```

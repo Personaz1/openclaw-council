@@ -1,0 +1,11 @@
+{
+  "name": "openclaw-council",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pluggable multi-role council layer for OpenClaw",
+  "license": "MIT",
+  "openclaw": {
+    "extensions": ["./index.js"]
+  }
+}
