@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 - 2026-02-08
+
+### Added
+- New `/council` subcommands:
+  - `/council status`
+  - `/council config-check`
+  - `/council roles list`
+- Improved command UX with integrated help text and operational checks.
+
+### Changed
+- `/council <query>` now shares one unified command surface with utility operations.
+- Bumped plugin/package version to `0.3.0`.
+
 ## 0.2.0 - 2026-02-08
 
 ### Added

@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -17,16 +18,24 @@ function runProcess(command, args, cwd) {
   });
 }
 
-async function runCouncil(query) {
+function getPaths() {
   const cwd = __dirname;
-  const config = join(cwd, "council.config.json");
-  const runJson = join(cwd, "run.json");
-  const reportMd = join(cwd, "report.md");
+  return {
+    cwd,
+    config: join(cwd, "council.config.json"),
+    runJson: join(cwd, "run.json"),
+    reportMd: join(cwd, "report.md"),
+    rolesDir: join(cwd, "roles"),
+  };
+}
+
+async function runCouncil(query) {
+  const p = getPaths();
 
   const runRes = await runProcess(
     "python3",
-    ["council.py", "run", "--query", query, "--config", config, "--out", runJson],
-    cwd,
+    ["council.py", "run", "--query", query, "--config", p.config, "--out", p.runJson],
+    p.cwd,
   );
 
   if (runRes.code !== 0) {
@@ -40,8 +49,8 @@ async function runCouncil(query) {
 
   const reportRes = await runProcess(
     "python3",
-    ["render_report.py", "--infile", runJson, "--out", reportMd],
-    cwd,
+    ["render_report.py", "--infile", p.runJson, "--out", p.reportMd],
+    p.cwd,
   );
 
   if (reportRes.code !== 0) {
@@ -53,13 +62,89 @@ async function runCouncil(query) {
     };
   }
 
-  const preview = [
-    "✅ Council completed.",
-    `Artifacts: ${runJson}, ${reportMd}`,
-    "Tip: open report.md for the final synthesis.",
-  ].join("\n");
+  return {
+    ok: true,
+    text: [
+      "✅ Council completed.",
+      `Artifacts: ${p.runJson}, ${p.reportMd}`,
+      "Tip: open report.md for the final synthesis.",
+    ].join("\n"),
+  };
+}
 
-  return { ok: true, text: preview };
+async function statusText() {
+  const p = getPaths();
+  const py = await runProcess("python3", ["--version"], p.cwd);
+  const hasCfg = existsSync(p.config);
+  const hasRun = existsSync(p.runJson);
+  const hasReport = existsSync(p.reportMd);
+
+  return [
+    "OpenClaw Council status",
+    `- plugin: openclaw-council`,
+    `- python: ${py.code === 0 ? (py.stdout || py.stderr).trim() : "not available"}`,
+    `- config: ${hasCfg ? "present" : "missing (create from examples/council.config.example.json)"}`,
+    `- last run.json: ${hasRun ? "present" : "missing"}`,
+    `- last report.md: ${hasReport ? "present" : "missing"}`,
+  ].join("\n");
+}
+
+function configCheckText() {
+  const p = getPaths();
+  if (!existsSync(p.config)) {
+    return [
+      "Config check: FAIL",
+      "- council.config.json is missing",
+      "- create it from: examples/council.config.example.json",
+    ].join("\n");
+  }
+
+  try {
+    const cfg = JSON.parse(readFileSync(p.config, "utf8"));
+    const providersOk = !!cfg.providers && typeof cfg.providers === "object";
+    const rolesOk = Array.isArray(cfg.roles) && cfg.roles.length > 0;
+    const synthOk = !!cfg.synthesizer && typeof cfg.synthesizer === "object";
+
+    const issues = [];
+    if (!providersOk) issues.push("providers{} is missing or invalid");
+    if (!rolesOk) issues.push("roles[] is missing or empty");
+    if (!synthOk) issues.push("synthesizer is missing");
+
+    if (issues.length) {
+      return ["Config check: FAIL", ...issues.map((x) => `- ${x}`)].join("\n");
+    }
+
+    return [
+      "Config check: OK",
+      `- providers: ${Object.keys(cfg.providers).length}`,
+      `- roles: ${cfg.roles.length}`,
+      `- synthesizer: ${cfg.synthesizer.name || "set"}`,
+    ].join("\n");
+  } catch (e) {
+    return ["Config check: FAIL", `- invalid JSON: ${String(e)}`].join("\n");
+  }
+}
+
+function rolesListText() {
+  const p = getPaths();
+  if (!existsSync(p.rolesDir)) {
+    return "Roles list: roles/ directory is missing.";
+  }
+  const files = readdirSync(p.rolesDir)
+    .filter((f) => f.endsWith(".md"))
+    .sort();
+  if (!files.length) return "Roles list: no role files found.";
+  return ["Roles", ...files.map((f) => `- ${f.replace(/\.md$/, "")}`)].join("\n");
+}
+
+function helpText() {
+  return [
+    "Usage:",
+    "/council <query>",
+    "/council status",
+    "/council config-check",
+    "/council roles list",
+  ].join("\n");
 }
 
 export default function register(api) {
@@ -67,20 +152,19 @@ export default function register(api) {
 
   api.registerCommand({
     name: "council",
-    description: "Run OpenClaw Council. Usage: /council <query>",
+    description: "Run OpenClaw Council and utility subcommands",
     acceptsArgs: true,
     requireAuth: true,
     handler: async (ctx) => {
-      const query = (ctx.args || "").trim();
-      if (!query) {
-        return {
-          text:
-            "Usage: /council <query>\n" +
-            "Example: /council Build a 14-day GTM plan for this plugin",
-        };
-      }
+      const args = (ctx.args || "").trim();
+      if (!args) return { text: helpText() };
 
-      const result = await runCouncil(query);
+      const lower = args.toLowerCase();
+      if (lower === "status") return { text: await statusText() };
+      if (lower === "config-check") return { text: configCheckText() };
+      if (lower === "roles list") return { text: rolesListText() };
+
+      const result = await runCouncil(args);
       return { text: result.text };
     },
   });

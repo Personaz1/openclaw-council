@@ -2,7 +2,7 @@
   "id": "openclaw-council",
   "name": "OpenClaw Council",
   "description": "Pluggable multi-role council layer for OpenClaw (consensus + synthesis).",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "skills": ["skills/openclaw-council"],
   "configSchema": {
     "type": "object",

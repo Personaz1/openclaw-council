@@ -19,6 +19,7 @@ Single-model answers can be fast but brittle. Council mode adds structured cross
 - Multi-provider support via OpenAI-compatible Chat Completions endpoints
 - Parallel round-1 + critique round + synthesis round
 - Structured JSON output + markdown report renderer
+- Native slash command UX in OpenClaw
 - Safe local config model (secrets only via env vars)
 
 ## Repository layout
@@ -37,6 +38,31 @@ Single-model answers can be fast but brittle. Council mode adds structured cross
 - OpenClaw CLI installed and configured
 - Provider API keys (for live mode)
 
+## Install as OpenClaw plugin
+
+```bash
+git clone https://github.com/Personaz1/openclaw-council.git
+cd openclaw-council
+openclaw plugins install .
+openclaw plugins enable openclaw-council
+openclaw gateway restart
+```
+
+## Use native slash commands
+
+```text
+/council <query>
+/council status
+/council config-check
+/council roles list
+```
+
+Example:
+
+```text
+/council Build a 14-day GTM plan for OpenClaw Council
+```
+
 ## Quick start (local run)
 
 ```bash
@@ -50,36 +76,6 @@ python3 council.py run \
 
 python3 render_report.py --infile run.json --out report.md
 ```
-
-## Install as OpenClaw plugin
-
-```bash
-git clone https://github.com/Personaz1/openclaw-council.git
-cd openclaw-council
-openclaw plugins install .
-openclaw plugins enable openclaw-council
-openclaw gateway restart
-```
-
-## Use as a native slash command
-
-After plugin install, run:
-
-```text
-/council <your query>
-```
-
-Example:
-
-```text
-/council Build a 14-day GTM plan for OpenClaw Council
-```
-
-The plugin executes the full council pipeline and writes:
-- `run.json`
-- `report.md`
-
-in the plugin directory.
 
 ## One-command local install (skill-style copy)
 
