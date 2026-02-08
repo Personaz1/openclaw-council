@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "query",
+    "round1",
+    "critic_round",
+    "synthesis"
+  ],
+  "properties": {
+    "query": { "type": "string" },
+    "round1": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "provider", "content"],
+        "properties": {
+          "role": { "type": "string" },
+          "provider": { "type": "string" },
+          "content": { "type": "string" }
+        }
+      }
+    },
+    "critic_round": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": { "type": "string" },
+          "content": { "type": "string" }
+        }
+      }
+    },
+    "synthesis": {
+      "type": "object",
+      "required": ["final_answer", "agreement_points", "disagreement_points", "risks", "open_questions", "next_actions", "confidence"],
+      "properties": {
+        "final_answer": { "type": "string" },
+        "agreement_points": { "type": "array", "items": { "type": "string" } },
+        "disagreement_points": { "type": "array", "items": { "type": "string" } },
+        "risks": { "type": "array", "items": { "type": "string" } },
+        "open_questions": { "type": "array", "items": { "type": "string" } },
+        "next_actions": { "type": "array", "items": { "type": "string" } },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    }
+  }
+}

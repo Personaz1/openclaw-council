@@ -1,0 +1,12 @@
+# local runtime
+council.config.json
+*.log
+*.tmp
+
+# outputs
+run.json
+report.md
+
+# python
+__pycache__/
+*.pyc
