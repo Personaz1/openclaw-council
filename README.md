@@ -116,3 +116,12 @@ See [`ROADMAP.md`](./ROADMAP.md).
 > Note: the project is fully usable today, but progress on advanced quality features is slower without API funding.
 
 If you want to sponsor development or fund specific milestones, open an issue/discussion in this repo.
+
+
+## Work / hiring
+
+I’m actively looking for work and available for funded collaboration.
+
+I code from morning to night and focus on shipping practical AI products.
+
+See [`WORK_AND_SPONSORSHIP.md`](./WORK_AND_SPONSORSHIP.md).
