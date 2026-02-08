@@ -42,3 +42,10 @@ python3 council.py run --query "Сделай план запуска проду�
 ```bash
 # положить папку в ваш каталог skills и запускать команды из SKILL.md
 ```
+
+
+## One-command local install
+```bash
+bash install.sh
+```
+Installs into `~/.openclaw/skills/openclaw-council`.
