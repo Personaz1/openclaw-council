@@ -107,3 +107,12 @@ Add provider settings to `providers{}` in config:
 ## License
 
 MIT
+
+
+## Roadmap and funding
+
+See [`ROADMAP.md`](./ROADMAP.md).
+
+> Note: the project is fully usable today, but progress on advanced quality features is slower without API funding.
+
+If you want to sponsor development or fund specific milestones, open an issue/discussion in this repo.
